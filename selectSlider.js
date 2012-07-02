@@ -11,6 +11,7 @@
     },
 
     _create: function(){
+        $(this.element).addClass('ui-widget ui-select-slider');
         var _this = this;
         this.values = [];
 
@@ -36,10 +37,14 @@
         });
 
         // Create slider.
-        this.$slider = $('<div class="slider"></div>');
+        this.$slider = $('<div class="slider"></div>').appendTo(this.element);
         this._setUpSliderHandles();
+
+        if (this.options.tooltips){
+            this._setUpTooltips();
+        }
+
         this._setUpSliderTicksLabels();
-        this.element.append(this.$slider);
         this.$slider.slider({
             step: 1,
             min: 0,
@@ -59,7 +64,7 @@
                 
                 // Update tooltip.
                 if (_this.options.tooltips){
-                    _this.$tooltip.children('.text').text(choice.label);
+                    _this._refreshTooltip(choice, ui.value);
                 }
             },
             stop: function(e, ui){
@@ -74,13 +79,41 @@
 
     },
 
+
     _setUpSliderHandles: function(){
-        var $handle = $('<a href="#" class="ui-slider-handle" role="slider"></a>'); 
-        $handle.appendTo(this.$slider);
-        if (this.options.tooltips){
-            this.$tooltip = $('<span class="ui-slider-tooltip ui-widget-content ui-corner-all"><span class="text"></span><span class="ui-tooltip-pointer-down ui-widget-content"><span class="ui-tooltip-pointer-down-inner"></span></span>');
-            this.$tooltip.appendTo($handle);
-        }
+        this.$slider_handle = $('<a href="#" class="ui-slider-handle" role="slider"></a>'); 
+        this.$slider_handle.appendTo(this.$slider);
+    },
+
+    _setUpTooltips: function(){
+        var $tooltipContainer  = $('<div class="tooltip-container"></div>').insertBefore(this.$slider);
+        this.$tooltip = $('<span class="ui-select-slider-tooltip ui-corner-all"><span class="content"></span><span class="ui-tooltip-pointer-down"><span class="ui-tooltip-pointer-down-inner"></span></span>');
+        this.$tooltip.appendTo($tooltipContainer);
+
+        // Listen for changes to slider handles.
+        var _this = this;
+        e2c_map = [
+            ['mouseenter', 'ui-state-hover', 'add'],
+            ['mouseleave', 'ui-state-hover', 'remove'],
+            ['focus', 'ui-state-focus', 'add'],
+            ['blur', 'ui-state-focus', 'remove']
+                ];
+
+        $.each(e2c_map, function(i, e2c){
+            _this.$slider_handle.on(e2c[0], function(e){
+                if (e2c[2] == 'add'){
+                    _this.$tooltip.addClass(e2c[1]);
+                }
+                else if (e2c[2] == 'remove'){
+                    _this.$tooltip.removeClass(e2c[1]);
+                }
+            });
+        });
+
+    },
+
+    _getChoicePosPct: function(choice_idx){
+        return (choice_idx/(this.choices.length - 1) * 100.0).toFixed(2) + '%';
     },
 
     _setUpSliderTicksLabels: function(){
@@ -89,16 +122,16 @@
         var _this = this;
         $.each(this.choices, function(i, choice){
             var $li = $('<li></li>');
-            $li.css('left', (i/(_this.choices.length - 1) * 100.0).toFixed(2) + '%');
+            $li.css('left', _this._getChoicePosPct(i));
             $li.appendTo($scale);
 
             if (_this.options.showTics && choice.showTic){
-                var $tic = $('<span class="ui-slider-tic ui-widget-content"></span>');
+                var $tic = $('<span class="ui-slider-tic"></span>');
                 $tic.appendTo($li);
             }
 
             if (_this.options.showLabels && choice.showLabel){
-                var $label = $('<span class="ui-slider-label ui-slider-label-show">' + choice.label + '</span>');
+                var $label = $('<span class="ui-slider-label">' + choice.label + '</span>');
                 $label.appendTo($li);
             }
 
@@ -192,15 +225,20 @@
 
     _refreshValue: function(){
         this.$select.val(this.value());
-        var val_idx = this.$select.children('option[value="' + this.value() + '"]').index()
-        if (this.$slider.slider('value') != val_idx){
-            this.$slider.slider('value', val_idx);
+        var choice_idx = this.$select.children('option[value="' + this.value() + '"]').index()
+        if (this.$slider.slider('value') != choice_idx){
+            this.$slider.slider('value', choice_idx);
         }
 
         // Update tooltip.
         if (this.options.tooltips){
-            this.$tooltip.children('.text').text(this.choices[val_idx].label);
+            this._refreshTooltip(this.choices[choice_idx], choice_idx);
         }
+    },
+
+    _refreshTooltip: function(choice, choice_idx){
+        this.$tooltip.css('left', this._getChoicePosPct(choice_idx));
+        this.$tooltip.children('.content').text(choice.label);
     },
 
     value: function( newValue ) {
