@@ -3,6 +3,8 @@
     $.widget("ui.selectSlider", {
 
     options: {
+        labels: 3,
+        tooltips: true
     },
 
     _create: function(){
@@ -23,23 +25,83 @@
             this.$select = $(match[0]);
         }
 
-        // Listen for changes in the select.
-
-        this.$select.on('change', function(event){
-            _this.value(_this.$select.val());
+        // Listen for changes in the select when not sliding.
+        this.$select.on('change', function(e){
+            if (! _this._sliding){
+                _this.value(_this.$select.val());
+            }
         });
 
         // Create slider.
         this.$slider = $('<div class="slider"></div>');
+        this._setUpSliderHandles();
+        this._setUpSliderLabels();
         this.element.append(this.$slider);
         this.$slider.slider({
             step: 1,
             min: 0,
             max: this.choices.length - 1,
-            change: function(event, ui){
+            change: function(e, ui){
                 _this.value(_this.choices[ui.value].value);
+            },
+            start: function(e, ui){
+                _this._sliding = true;
+            },
+            slide: function(e, ui){
+                // Get the current choice the slider is on.
+                var choice = _this.choices[ui.value];
+
+                // Update select.
+                _this.$select.val(choice.value);
+                
+                // Update tooltip.
+                if (_this.options.tooltips){
+                    _this.$tooltip.children('.text').text(choice.label);
+                }
+            },
+            stop: function(e, ui){
+                _this._sliding = false;
             }
         });
+
+        // Set initial value if none set.
+        if (! this.value() && this.choices.length > 0){
+            this.value(this.choices[0].value);
+        }
+
+    },
+
+    _setUpSliderHandles: function(){
+        var $handle = $('<a href="#" class="ui-slider-handle" role="slider"></a>'); 
+        $handle.appendTo(this.$slider);
+        if (this.options.tooltips){
+            this.$tooltip = $('<span class="ui-slider-tooltip ui-widget-content ui-corner-all"><span class="text"></span><span class="ui-tooltip-pointer-down ui-widget-content"><span class="ui-tooltip-pointer-down-inner"></span></span>');
+            this.$tooltip.appendTo($handle);
+        }
+    },
+
+    _setUpSliderLabels: function(){
+        var $scale = $('<ol class="ui-slider-scale ui-helper-reset" role="presentation"></ol>');
+        $scale.appendTo(this.$slider);
+        var _this = this;
+        $.each(this.choices, function(i, choice){
+            var leftVal = (i/(_this.choices.length - 1) * 100.0).toFixed(2) + '%';
+            var $label = $('<li><span class="ui-slider-label"></span><span class="ui-slider-tic ui-widget-content"></span></li>');
+            $label.css('left', leftVal);
+            $label.children('.ui-slider-label').first().text(choice.label);
+            $label.appendTo($scale);
+        });
+
+        if (this.options.labels > 1) {
+            this.$slider.find('.ui-slider-scale li:last span.ui-slider-label').addClass('ui-slider-label-show');
+        }
+	
+        var increm = Math.max(1, Math.round(this.choices.length / this.options.labels));
+        for (var i=0; i < this.choices.length; i +=increm){
+            if ( (this.choices.length - i) > increm){
+                this.$slider.find('.ui-slider-scale li:eq('+ i +') span.ui-slider-label').addClass('ui-slider-label-show');
+            }
+        }
 
     },
 
@@ -116,6 +178,11 @@
         var val_idx = this.$select.children('option[value="' + this.value() + '"]').index()
         if (this.$slider.slider('value') != val_idx){
             this.$slider.slider('value', val_idx);
+        }
+
+        // Update tooltip.
+        if (this.options.tooltips){
+            this.$tooltip.children('.text').text(this.choices[val_idx].label);
         }
     },
 

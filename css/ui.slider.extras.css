@@ -5,7 +5,9 @@
 }
 .ui-slider .ui-slider-handle  {
 	overflow: visible !important;
+    outline: none !important;
 }
+
 .ui-slider .ui-slider-tooltip {
 	display: none;
 }
