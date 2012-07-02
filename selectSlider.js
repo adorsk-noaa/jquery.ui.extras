@@ -8,7 +8,8 @@
         showLabels: true,
         labelInterval: 3,
         tooltips: true,
-        choices: []
+        choices: [],
+        foo: "adsfasdf"
     },
 
     _create: function(){
@@ -58,14 +59,20 @@
         this.$slider.slider({
             step: 1,
             min: 0,
-            max: this.choices.length - 1,
+            max: 1,
             change: function(e, ui){
+                if (_this.choices.length == 0){
+                    return;
+                }
                 _this.value(_this.choices[ui.value].value);
             },
             start: function(e, ui){
                 _this._sliding = true;
             },
             slide: function(e, ui){
+                if (_this.choices.length == 0){
+                    return;
+                }
                 // Get the current choice the slider is on.
                 var choice = _this.choices[ui.value];
 
@@ -135,17 +142,11 @@
         this.$scale.appendTo(this.$slider);
     },
 
-
-    _init: function(){
-    },
-
     _setOption: function(key, value){
         var i, valsLength = 0;
         if ( $.isArray( this.options.values ) ) {
             valsLength = this.options.values.length;
         }
-
-        $.Widget.prototype._setOption.apply( this, arguments );
 
         switch(key){
             case "value":
@@ -165,6 +166,8 @@
                 this.value(this.choices[0].value);
                 break;
         }
+
+        $.Widget.prototype._setOption.apply( this, arguments );
     },
 
     _getSelectChoices: function(){
@@ -249,7 +252,7 @@
     },
 
     _refreshSlider: function(){
-        this.$slider.slider('max', this.choices.length - 1);
+        this.$slider.slider('option', {'max': this.choices.length - 1});
         this._refreshSliderScale();
     },
 
