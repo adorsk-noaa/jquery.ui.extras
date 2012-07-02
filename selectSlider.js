@@ -87,16 +87,16 @@
 
     _setUpTooltips: function(){
         var $tooltipContainer  = $('<div class="tooltip-container"></div>').insertBefore(this.$slider);
-        this.$tooltip = $('<span class="ui-select-slider-tooltip ui-corner-all"><span class="content"></span><span class="ui-tooltip-pointer-down"><span class="ui-tooltip-pointer-down-inner"></span></span>');
+        this.$tooltip = $('<span class="ui-select-slider-tooltip ui-corner-all"><span class="content"></span><span class="pointer-down"><span class="inner"></span></span>');
         this.$tooltip.appendTo($tooltipContainer);
 
         // Listen for changes to slider handles.
         var _this = this;
         e2c_map = [
-            ['mouseenter', 'ui-state-hover', 'add'],
-            ['mouseleave', 'ui-state-hover', 'remove'],
-            ['focus', 'ui-state-focus', 'add'],
-            ['blur', 'ui-state-focus', 'remove']
+            ['mouseenter', 'state-hover', 'add'],
+            ['mouseleave', 'state-hover', 'remove'],
+            ['focus', 'state-focus', 'add'],
+            ['blur', 'state-focus', 'remove']
                 ];
 
         $.each(e2c_map, function(i, e2c){
@@ -237,7 +237,12 @@
     },
 
     _refreshTooltip: function(choice, choice_idx){
+        // Position relative to choice and center.
         this.$tooltip.css('left', this._getChoicePosPct(choice_idx));
+        var tt_pos = this.$tooltip.position();
+        this.$tooltip.css('left', tt_pos.left - this.$tooltip.width()/2.0);
+
+        // Set the label.
         this.$tooltip.children('.content').text(choice.label);
     },
 
