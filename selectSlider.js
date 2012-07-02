@@ -3,7 +3,10 @@
     $.widget("ui.selectSlider", {
 
     options: {
-        labels: 3,
+        showTics: true,
+        allTics: true,
+        showLabels: true,
+        labelInterval: 3,
         tooltips: true
     },
 
@@ -35,7 +38,7 @@
         // Create slider.
         this.$slider = $('<div class="slider"></div>');
         this._setUpSliderHandles();
-        this._setUpSliderLabels();
+        this._setUpSliderTicksLabels();
         this.element.append(this.$slider);
         this.$slider.slider({
             step: 1,
@@ -80,28 +83,26 @@
         }
     },
 
-    _setUpSliderLabels: function(){
+    _setUpSliderTicksLabels: function(){
         var $scale = $('<ol class="ui-slider-scale ui-helper-reset" role="presentation"></ol>');
         $scale.appendTo(this.$slider);
         var _this = this;
         $.each(this.choices, function(i, choice){
-            var leftVal = (i/(_this.choices.length - 1) * 100.0).toFixed(2) + '%';
-            var $label = $('<li><span class="ui-slider-label"></span><span class="ui-slider-tic ui-widget-content"></span></li>');
-            $label.css('left', leftVal);
-            $label.children('.ui-slider-label').first().text(choice.label);
-            $label.appendTo($scale);
-        });
+            var $li = $('<li></li>');
+            $li.css('left', (i/(_this.choices.length - 1) * 100.0).toFixed(2) + '%');
+            $li.appendTo($scale);
 
-        if (this.options.labels > 1) {
-            this.$slider.find('.ui-slider-scale li:last span.ui-slider-label').addClass('ui-slider-label-show');
-        }
-	
-        var increm = Math.max(1, Math.round(this.choices.length / this.options.labels));
-        for (var i=0; i < this.choices.length; i +=increm){
-            if ( (this.choices.length - i) > increm){
-                this.$slider.find('.ui-slider-scale li:eq('+ i +') span.ui-slider-label').addClass('ui-slider-label-show');
+            if (_this.options.showTics && choice.showTic){
+                var $tic = $('<span class="ui-slider-tic ui-widget-content"></span>');
+                $tic.appendTo($li);
             }
-        }
+
+            if (_this.options.showLabels && choice.showLabel){
+                var $label = $('<span class="ui-slider-label ui-slider-label-show">' + choice.label + '</span>');
+                $label.appendTo($li);
+            }
+
+        });
 
     },
 
@@ -143,10 +144,26 @@
     },
 
     _prepareChoices: function(choices){
+        var _this = this;
         $.each(choices, function(i, c){
             if (c.label == null){
                 c.label = c.value;
             }
+
+            if (_this.options.ticInterval){
+                c.showTic = ( (i % _this.options.ticInterval) == 0);
+            }
+            else if (_this.options.allTics){
+                c.showTic = true;
+            }
+
+            if (_this.options.labelInterval){
+                c.showLabel= ( (i % _this.options.labelInterval) == 0);
+            }
+            else if (_this.options.allLabels){
+                c.showLabel = true;
+            }
+
             choices[i] = c;
         })
         return choices;
