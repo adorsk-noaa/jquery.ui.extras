@@ -7,7 +7,8 @@
         allTics: true,
         showLabels: true,
         labelInterval: 3,
-        tooltips: true
+        tooltips: true,
+        choices: []
     },
 
     _create: function(){
@@ -20,14 +21,23 @@
         if (match.length == 0){
             this.$select = $('<select></select>');
             this.element.append(this.$select);
-
-            // If choices were given, populate the select.
-            this.choices = this._prepareChoices(this.options.choices);
-            this._populateSelect(this.choices);
+            this.choices = this.options.choices;
         }
         else{
             this.$select = $(match[0]);
+            // Extract choices from the select options.
+            var extractedChoices = [];
+            this.$select.children('options').each(function(i, $el){
+                extractedChoices.push({
+                    'value': $el.attr('id'),
+                    'label': $el.text()
+                });
+            });
+            this.choices = extractedChoices;
         }
+
+        // Prepare the choices.
+        this.choices = this._prepareChoices(this.choices);
 
         // Listen for changes in the select when not sliding.
         this.$select.on('change', function(e){
@@ -44,7 +54,7 @@
             this._setUpTooltips();
         }
 
-        this._setUpSliderTicksLabels();
+        this._setUpSliderScale();
         this.$slider.slider({
             step: 1,
             min: 0,
@@ -71,6 +81,10 @@
                 _this._sliding = false;
             }
         });
+
+        // Refresh the slider and select.
+        this._refreshSlider();
+        this._refreshSelect();
 
         // Set initial value if none set.
         if (! this.value() && this.choices.length > 0){
@@ -116,27 +130,9 @@
         return (choice_idx/(this.choices.length - 1) * 100.0).toFixed(2) + '%';
     },
 
-    _setUpSliderTicksLabels: function(){
-        var $scale = $('<ol class="ui-slider-scale ui-helper-reset" role="presentation"></ol>');
-        $scale.appendTo(this.$slider);
-        var _this = this;
-        $.each(this.choices, function(i, choice){
-            var $li = $('<li></li>');
-            $li.css('left', _this._getChoicePosPct(i));
-            $li.appendTo($scale);
-
-            if (_this.options.showTics && choice.showTic){
-                var $tic = $('<span class="ui-slider-tic"></span>');
-                $tic.appendTo($li);
-            }
-
-            if (_this.options.showLabels && choice.showLabel){
-                var $label = $('<span class="ui-slider-label">' + choice.label + '</span>');
-                $label.appendTo($li);
-            }
-
-        });
-
+    _setUpSliderScale: function(){
+        this.$scale = $('<ol class="ui-slider-scale ui-helper-reset" role="presentation"></ol>');
+        this.$scale.appendTo(this.$slider);
     },
 
 
@@ -161,6 +157,12 @@
                 for ( i = 0; i < valsLength; i += 1 ) {
                     this._change( null, i );
                 }
+                break;
+            case "choices":
+                this.choices = this._prepareChoices(value);
+                this._refreshSelect();
+                this._refreshSlider();
+                this.value(this.choices[0].value);
                 break;
         }
     },
@@ -244,6 +246,40 @@
 
         // Set the label.
         this.$tooltip.children('.content').text(choice.label);
+    },
+
+    _refreshSlider: function(){
+        this.$slider.slider('max', this.choices.length - 1);
+        this._refreshSliderScale();
+    },
+
+    _refreshSliderScale: function(){
+        this.$scale.empty();
+        var _this = this;
+        $.each(this.choices, function(i, choice){
+            var $li = $('<li></li>');
+            $li.css('left', _this._getChoicePosPct(i));
+            $li.appendTo(_this.$scale);
+
+            if (_this.options.showTics && choice.showTic){
+                var $tic = $('<span class="ui-slider-tic"></span>');
+                $tic.appendTo($li);
+            }
+
+            if (_this.options.showLabels && choice.showLabel){
+                var $label = $('<span class="ui-slider-label">' + choice.label + '</span>');
+                $label.appendTo($li);
+            }
+
+        });
+    },
+
+    _refreshSelect: function(){
+        this.$select.empty();
+        var _this = this;
+        $.each(this.choices, function(i, o){
+            _this.$select.append($('<option value="' + o.value + '">' + o.label + '</option>'));
+        });
     },
 
     value: function( newValue ) {
