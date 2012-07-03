@@ -91,6 +91,13 @@
             }
         });
 
+        // No corners, and no side borders if showing tics.
+        this.$slider.removeClass("ui-corner-all");
+        if (! this.options.showTics){
+            this.$slider.css('border-right', '0');
+            this.$slider.css('border-left', '0');
+        }
+
         // Refresh the slider and select.
         this._refreshSlider();
         this._refreshSelect();
