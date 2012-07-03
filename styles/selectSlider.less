@@ -1,88 +1,101 @@
 @import "rounded-corners.less";
 
 .ui-select-slider  {
-	text-decoration: none !important;
+    @label_w: 4em;
 
-    * {
-        outline: none;
-    }
+    text-decoration: none !important;
 
-    a {
-        text-decoration: none !important;
-    }
-    
-    .tooltip-container{
-        height: 2em;
-        width: 100%;
-        position: relative;
-        margin-bottom: 5px;
+    > .inner {
+        padding: 0 @label_w/2;
 
-        .ui-select-slider-tooltip {
-            visibility: hidden;
-            position: absolute;
-            top: 0;
-            bottom: 0;
-            text-align: center;
-            padding: .3em .2em .4em;
-            width: 3em;
 
-            > .content{
-                .rounded_corners(5px);
+        a {
+            text-decoration: none !important;
+            outline: none;
+        }
+
+        .tooltip-container{
+            height: 2em;
+            width: 100%;
+            position: relative;
+            margin-bottom: 5px;
+
+            .ui-select-slider-tooltip {
+                visibility: hidden;
                 position: absolute;
                 top: 0;
-                bottom: 15%;
-                width: 100%;
-                border: thin solid blue;
-            }
+                bottom: 0;
+                text-align: center;
+                padding: .3em .2em .4em;
+                width: 3em;
 
-            &.state-active, &.state-focus, &.state-hover{
-                visibility: visible;
+                > .content{
+                    .rounded_corners(5px);
+                    position: absolute;
+                    top: 0;
+                    bottom: 15%;
+                    width: 100%;
+                    border: thin solid blue;
+                }
+
+                &.state-active, &.state-focus, &.state-hover{
+                    visibility: visible;
+                }
             }
         }
-    }
 
 
-    .slider{
+        .slider{
 
-        .ui-slider-handle  {
-            overflow: visible !important;
-            outline: none !important;
-        }
+            .ui-slider-handle  {
+                overflow: visible !important;
+                outline: none !important;
+            }
 
 
 
-        > ol.ui-slider-scale{
-            list-style: none;
-            margin: 0;
-            padding: 0;
-            position: relative;
-            top: 1.3em;
-            width: 100%;
-
-            > li {
+            > ol.ui-slider-scale{
                 list-style: none;
                 margin: 0;
                 padding: 0;
-                position: absolute;
-                overflow: visible;
-                color: #666;
+                position: relative;
+                top: 1.3em;
+                width: 100%;
 
-                .ui-slider-label {
+                > li {
+                    list-style: none;
+                    margin: 0;
+                    padding: 0;
                     position: absolute;
-                }
+                    overflow: visible;
+                    color: #666;
 
-                .ui-slider-tic {
-                    position: absolute;
-                    left: 0;
-                    height: .8em;
-                    top: -1.3em;
-                    border-color: black;
-                    border-width: 0px 1px 0px 0px;
-                    border-style: solid;
+                    .ui-slider-label {
+                        position: absolute;
+                        max-width: @label_w;
+                        text-overflow: ellipsis;
+                        overflow: hidden;
+                        white-space: nowrap;
+                        margin-left: -@label_w/2;
+
+                        &+.ui-slider-tic{
+                            border-width: 0px 2px 0px 0px;
+                        }
+                    }
+
+                    .ui-slider-tic {
+                        position: absolute;
+                        left: 0;
+                        height: .8em;
+                        top: -1.3em;
+                        border-color: gray;
+                        border-width: 0px 1px 0px 0px;
+                        border-style: solid;
+                    }
                 }
             }
-        }
 
+        }
     }
 }
 

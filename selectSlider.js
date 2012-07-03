@@ -16,11 +16,14 @@
         var _this = this;
         this.values = [];
 
+        // Create inner container.
+        this.$inner = $('<div class="inner"></div>').appendTo(this.element);
+
         // Get or create the select element.
         var match = this.element.children('select');
         if (match.length == 0){
             this.$select = $('<select></select>');
-            this.element.append(this.$select);
+            this.$inner.append(this.$select);
             this.choices = this.options.choices;
         }
         else{
@@ -47,7 +50,7 @@
         });
 
         // Create slider.
-        this.$slider = $('<div class="slider"></div>').appendTo(this.element);
+        this.$slider = $('<div class="slider"></div>').appendTo(this.$inner);
         this._setUpSliderHandles();
 
         if (this.options.tooltips){
@@ -263,15 +266,17 @@
             $li.css('left', _this._getChoicePosPct(i));
             $li.appendTo(_this.$scale);
 
+            // Note: order is important here, for css sibling selectors.
+            if (_this.options.showLabels && choice.showLabel){
+                var $label = $('<span class="ui-slider-label">' + choice.label + '</span>');
+                $label.appendTo($li);
+            }
+
             if (_this.options.showTics && choice.showTic){
                 var $tic = $('<span class="ui-slider-tic"></span>');
                 $tic.appendTo($li);
             }
 
-            if (_this.options.showLabels && choice.showLabel){
-                var $label = $('<span class="ui-slider-label">' + choice.label + '</span>');
-                $label.appendTo($li);
-            }
 
         });
     },
