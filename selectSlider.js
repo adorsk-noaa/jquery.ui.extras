@@ -57,7 +57,7 @@
             this._setUpTooltips();
         }
 
-        this._setUpSliderScale();
+        this._setUpTicsLabels();
         this.$slider.slider({
             step: 1,
             min: 0,
@@ -146,9 +146,13 @@
         return (choice_idx/(this.choices.length - 1) * 100.0).toFixed(2) + '%';
     },
 
-    _setUpSliderScale: function(){
-        this.$scale = $('<ol class="ui-slider-scale ui-helper-reset" role="presentation"></ol>');
-        this.$scale.appendTo(this.$slider);
+    _setUpTicsLabels: function(){
+        if (this.options.showTics){
+            this.$tics = $('<div class="tics"></div>').appendTo(this.$slider);
+        }
+        if (this.options.showLabels){
+            this.$labels = $('<div class="labels"></div>').insertAfter(this.$slider);
+        }
     },
 
     _setOption: function(key, value){
@@ -262,29 +266,29 @@
 
     _refreshSlider: function(){
         this.$slider.slider('option', {'max': this.choices.length - 1});
-        this._refreshSliderScale();
+        this._refreshTicsLabels();
     },
 
-    _refreshSliderScale: function(){
-        this.$scale.empty();
+
+    _refreshTicsLabels: function(){
         var _this = this;
         $.each(this.choices, function(i, choice){
-            var $li = $('<li></li>');
-            $li.css('left', _this._getChoicePosPct(i));
-            $li.appendTo(_this.$scale);
+            var left = _this._getChoicePosPct(i);
 
-            // Note: order is important here, for css sibling selectors.
             if (_this.options.showLabels && choice.showLabel){
-                var $label = $('<span class="ui-slider-label">' + choice.label + '</span>');
-                $label.appendTo($li);
+                var $label = $('<span class="label">' + choice.label + '</span>');
+                $label.css('left', left);
+                $label.appendTo(_this.$labels);
             }
 
             if (_this.options.showTics && choice.showTic){
-                var $tic = $('<span class="ui-slider-tic"></span>');
-                $tic.appendTo($li);
+                var $tic = $('<span class="tic"></span>');
+                $tic.css('left', left);
+                if (_this.options.showLabels && choice.showLabel){
+                    $tic.addClass("labeled");
+                }
+                $tic.appendTo(_this.$tics);
             }
-
-
         });
     },
 

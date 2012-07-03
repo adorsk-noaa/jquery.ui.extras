@@ -6,7 +6,7 @@
     text-decoration: none !important;
 
     > .inner {
-        padding: 0 @label_w/2;
+        padding: 5px @label_w/2;
 
 
         a {
@@ -14,7 +14,7 @@
             outline: none;
         }
 
-        .tooltip-container{
+        > .tooltip-container{
             height: 2em;
             width: 100%;
             position: relative;
@@ -45,56 +45,54 @@
         }
 
 
-        .slider{
+        > .slider, > .labels{
+            position: relative;
+            width: 100%;
+        }
+
+        > .slider{
 
             .ui-slider-handle  {
                 overflow: visible !important;
                 outline: none !important;
             }
 
+            .tics{
+                position: absolute;
+                left: 0;
+                right: 0;
+                top: 0;
+                bottom: 0;
 
-
-            > ol.ui-slider-scale{
-                list-style: none;
-                margin: 0;
-                padding: 0;
-                position: relative;
-                top: 1.3em;
-                width: 100%;
-
-                > li {
-                    list-style: none;
-                    margin: 0;
-                    padding: 0;
+                .tic {
                     position: absolute;
-                    overflow: visible;
-                    color: #666;
+                    left: 0;
+                    top: 0;
+                    bottom: 0;
+                    border-color: gray;
+                    border-width: 0px 1px 0px 0px;
+                    border-style: solid;
 
-                    .ui-slider-label {
-                        position: absolute;
-                        max-width: @label_w;
-                        text-overflow: ellipsis;
-                        overflow: hidden;
-                        white-space: nowrap;
-                        margin-left: -@label_w/2;
-
-                        &+.ui-slider-tic{
-                            border-width: 0px 2px 0px 0px;
-                        }
-                    }
-
-                    .ui-slider-tic {
-                        position: absolute;
-                        left: 0;
-                        height: .8em;
-                        top: -1.3em;
-                        border-color: gray;
-                        border-width: 0px 1px 0px 0px;
-                        border-style: solid;
+                    &.labeled{
+                        border-width: 0px 2px 0px 0px;
                     }
                 }
             }
 
+        }
+
+        >.labels{
+            position: relative;
+            height: 1em;
+
+            .label{
+                position: absolute;
+                max-width: @label_w;
+                text-overflow: ellipsis;
+                overflow: hidden;
+                white-space: nowrap;
+                margin-left: -@label_w/2;
+            }
         }
     }
 }
