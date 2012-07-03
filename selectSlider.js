@@ -9,7 +9,6 @@
         labelInterval: 3,
         tooltips: true,
         choices: [],
-        foo: "adsfasdf"
     },
 
     _create: function(){
@@ -287,9 +286,12 @@
 
     value: function( newValue ) {
         if ( arguments.length ) {
-            this.options.value = newValue;
+            // Only change if value is new.
+            if (this.options.value != newValue){
+                this.options.value = newValue;
+                this._change( null, 0 );
+            }
             this._refreshValue();
-            this._change( null, 0 );
             return;
         }
         return this.options.value;
