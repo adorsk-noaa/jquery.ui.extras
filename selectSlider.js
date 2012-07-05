@@ -274,6 +274,9 @@
 
 
     _refreshTicsLabels: function(){
+        this.$tics.empty();
+        this.$labels.empty();
+
         var _this = this;
         $.each(this.choices, function(i, choice){
             var left = _this._getChoicePosPct(i);
