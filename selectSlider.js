@@ -173,10 +173,13 @@
                 }
                 break;
             case "choices":
-                this.choices = this._prepareChoices(value);
-                this._refreshSelect();
-                this._refreshSlider();
-                this.value(this.choices[0].value);
+                var choices = value;
+                if (choices.length > 0){
+                    this.choices = this._prepareChoices(choices);
+                    this._refreshSelect();
+                    this._refreshSlider();
+                    this.value(this.choices[0].value);
+                }
                 break;
         }
 
