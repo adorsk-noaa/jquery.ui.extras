@@ -178,7 +178,6 @@
                     this.choices = this._prepareChoices(choices);
                     this._refreshSelect();
                     this._refreshSlider();
-                    this.value(this.choices[0].value);
                 }
                 break;
         }
