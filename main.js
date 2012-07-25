@@ -1,6 +1,7 @@
 define([
-    "./selectSlider"
+    "./selectSlider",
+    "./jquery.ui.selectmenu"
 ],
-function(selectSlider){
+function(selectSlider, selectMenu){
     return;
 });
