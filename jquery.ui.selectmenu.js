@@ -9,7 +9,7 @@
  * https://github.com/fnagel/jquery-ui/wiki/Selectmenu
  */
 
-(function($) {
+(function($, ui) {
 
 $.widget("ui.selectmenu", {
 	getter: "value",
